@@ -43,11 +43,11 @@ group by BFS_NR, GEMEINDE
 
 ```{r}
 
-geodat_path ="L:/STAT/08_DS/03_GIS/Geodaten/2019/WahlkreiseAuszaehlkreiseGrosseSeeOhneExklaveSitze_gen_epsg2056_F_KTZH_2019.json"
+geodat_path ="C:/gitrepos/Ressources_Maps/2019/GemeindeGrosseSeeOhneExklave_gen_epsg2056_F_KTZH_2019.json"
 geodat_bfsnr_char = "GDE_ID";
 dat_df = einw;
 dat_bfsnr_char = "BFS_NR";
-topojson_path = "L:/STAT/08_DS/03_GIS/Admin/Dokumentation/Topojson/test.topojson";
+topojson_path = "C:/gitrepos/Ressources_Maps/2019/GemeindeGrosseSeeOhneExklave_gen_epsg2056_F_KTZH_2019.topojson";
 pixel_width_int = 480
 
 # Funktion topojson_write_stat
@@ -141,11 +141,11 @@ topojson_write_stat <- function(geodat_path, geodat_bfsnr_char, dat_df, dat_bfsn
 # @topojson_path: topojson output path
 
 topojson_write_stat(
-  geodat_path = "L:/STAT/08_DS/03_GIS/Geodaten/2019/WahlkreiseAuszaehlkreiseGrosseSeeOhneExklaveSitze_gen_F_KTZH_2019.shp",
-                    geodat_bfsnr_char = "GEM_ID", 
+  geodat_path = "L:/STAT/08_DS/03_GIS/Geodaten/2019/GemeindeGrosseSeeOhneExklave_gen_F_KTZH_2019.shp",
+                    geodat_bfsnr_char = "GDE_ID", 
                     dat_df = einw, 
                     dat_bfsnr_char = "BFS_NR", 
-                    topojson_path = "L:/STAT/08_DS/03_GIS/Admin/Dokumentation/Topojson/test4.topojson", 
+                    topojson_path = "C:/gitrepos/Ressources_Maps/2019/GemeindeGrosseSeeOhneExklave_gen_epsg2056_F_KTZH_2019.topojson", 
                     pixel_width_int = 480)
 
 ```
