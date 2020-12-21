@@ -25,6 +25,15 @@ Admin Inforamtion: The scripts are stored here: C:/gitrepos/Ressources_Maps/Scri
 The same field name abbreviations should be used for each dataset. See: https://docs.google.com/spreadsheets/d/148nAAMzsWg5_aWQwX46x1DbG7G__ISMHxmmYa8AcotE/edit#gid=482829696
 
 
+## Weitere Daten die auch interessieren könnten
+
+**Jährlich aktualisiertes Topojson mit Geometrien der Schweiz** <br>
+https://opendata.swiss/de/dataset/geodaten-zu-den-eidgenoessischen-abstimmungsvorlagen/resource/77b62901-2f09-4434-afd6-08719a7f76e9
+
+**Maps Ressources for Data Engineering** <br>
+https://bitbucket.statistik.zh.ch/projects/SWM/repos/kantonzhadmingrenze
+
+
 
 ## Mitwirkende
 
