@@ -1,0 +1,150 @@
+---
+title: "GIS_ShpToGeoJSON"
+---
+
+**Autor:** Katharina Kaelin 
+
+**Stand:** 19.05.2020
+
+**Beschreibung:** 
+
+**Auswertungshinweis:**
+
+**Metadatenhinweis:**
+
+# R setup
+
+```{r setup}
+
+# clear R memory
+# rm(list = ls())
+
+# db_connect.r
+source("P:/db_connect.r")
+
+# import libraries
+library(sf)
+library(dplyr)
+library(readr)
+library(lwgeom)
+library(rmapshaper)
+
+options(scipen = 1000000)
+options(digits = 6)
+
+```
+
+# import dat
+
+```{r}
+
+
+plz_sf <- sf::st_read("L:/STAT/08_DS/03_GIS/Geodaten/2020/Postleitzahlenperimeter_F_CH_2020.shp", stringsAsFactors = FALSE, crs=2056) %>% select(PLZ)
+
+cant_sf <- sf::st_read("L:/STAT/08_DS/03_GIS/Geodaten/2020/KantonOhneGrosseSee_F_KTZH_2020.shp", stringsAsFactors = FALSE, crs=2056)
+
+plznamename_df <- readr::read_delim("L:/STAT/08_DS/03_GIS/Admin/Datenlieferungen/2020/Postleitzahl_Cadastre_20200710/PLZO_CSV_LV95/PLZO_CSV_LV95/PLZO_CSV_LV95.csv", col_names=TRUE, delim=";", locale = locale(encoding = "UTF-8"))
+
+```
+# ortsname with same plz to one coma separated attribute
+
+```{r}
+
+plz_list <- sort(unique(plznamename_df$PLZ))
+
+PLZ <- c(plz_list)
+Ortschaftsname <- NA
+
+plznamename_df_corr <- data.frame(PLZ, Ortschaftsname)
+
+for(i in 1:length(plz_list)){
+
+plz_sel <- plz_list[i]
+  
+ortsname_sel <- plznamename_df$Ortschaftsname[which(plznamename_df$PLZ == plz_sel)]
+
+plznamename_df_corr$PLZ[i] <- plz_list[i]
+plznamename_df_corr$Ortschaftsname[i] <- paste(as.character(ortsname_sel), collapse=", ")
+    
+} 
+
+# check
+nrow(plznamename_df_corr) == length(plz_list) # should be TRUE
+
+#View(plznamename_df[which(plznamename_df$PLZ == 8489),])
+#View(plznamename_df_corr[which(plznamename_df_corr$PLZ == 8489),])
+#table(plz_list == 8484)
+#table(plznamename_df_corr$PLZ == 8484)
+
+```
+
+
+# select only plz in Kt. ZH
+
+Für PLZ die nur teilweise im Kt.ZH liegen wird nur derjenige PLZ-Teil ausgewiesen, der im Kt. ZH liegt (Der PLZ-Teil, der nicht im Kanton Zürich liegt, wird abgeschnitten) 
+
+Für PLZ die aus mehreren Polygonen bestehen wird ein Polygon kreiert (Eine PLZ kann aus mehreren Zusatzziffern bestehen, was in mehreren Polygonen mit gleicher PLZ resultiert)
+
+PLZ die kleine Flächen haben (area_m2 > 90000) habe ich entfernt (ausser Kloster Fehr, diese PLZ ist trotz kleiner Fläche noch enthalten)
+=> Dies sind Slivers, die durch den Verschnitt mit der Kantonsgrenze resultieren. 
+
+Dieselbe PLZ kann mehrere Ortsnamen haben, diese ist im Attribut  Ortschaftsname als kommaseparierte Liste enthalten
+
+```{r, collapse=TRUE, warning=FALSE,  message=FALSE}
+
+plz_sel1_sf <- plz_sf %>%
+  sf::st_intersection(cant_sf) %>%
+  group_by(PLZ) %>%
+  summarize() %>%
+  ungroup() %>%
+  mutate(
+  area_m2 = as.vector(st_area(.))
+  ) %>%
+  dplyr::left_join(plznamename_df_corr, by = ("PLZ" = "PLZ")) 
+st_write(plz_sel1_sf, "P:/KK_Temp/plz_sel1.shp", delete_layer = TRUE)
+
+plz_sel2_sf <- plz_sel1_sf %>%
+  select(PLZ, Ortschaftsname, area_m2) %>%
+  filter(area_m2 > 90000 | PLZ == 8109) %>%
+  select(-area_m2)
+st_write(plz_sel2_sf, "P:/KK_Temp/plz_sel2.shp", delete_layer = TRUE)
+
+# durch den filter ''filter(area_m2 > 90000 | PLZ == 8109)' gehen 46 Reihen verloren. 
+nrow(plz_sel1_sf) - nrow(plz_sel2_sf) # 46
+
+```
+
+# generalize
+
+```{r}
+
+
+plz_sel_temp_sf <- rmapshaper::ms_simplify(plz_sel2_sf, keep = 0.01, keep_shapes = TRUE)
+plz_gen_sf <- lwgeom::st_snap_to_grid(plz_sel_temp_sf,1)
+
+```
+
+# export GeoJSON
+
+```{r}
+
+# Primarstufe
+
+## epsg2056
+
+path_2056 = "C:/gitrepos/Ressources_Maps/2020/PLZ_gen_epsg2056_F_KTZH_2020.json"
+file.remove(path_2056)
+sf::st_write(plz_gen_sf, path_2056, driver="GeoJSON")
+
+## epsg4326
+
+path_4326 = "C:/gitrepos/Ressources_Maps/2020/PLZ_gen_epsg4326_F_KTZH_2020.json"
+file.remove(path_4326)
+sf::st_write(plz_gen_sf %>% st_transform(4326), path_4326, driver="GeoJSON")
+
+```
+
+
+
+
+

@@ -1,0 +1,88 @@
+---
+  title: "R Notebook"
+---
+  
+  # R Setup 
+  
+```{r}
+
+# Clear R's memory
+rm(list=ls())
+
+# db_connect.r
+source("P:/db_connect.r")
+
+# library
+library(sf)
+library(tidyverse)
+
+```
+
+# Import data
+
+```{r}
+
+gemeinde <- st_read("L:/STAT/08_DS/03_GIS/Geodaten/2019/swissBOUNDARIES3D_gen_g1g19_F_CH_2019.shp", crs=2056)
+bezirk      <- st_read("L:/STAT/08_DS/03_GIS/Geodaten/2019/swissBOUNDARIES3D_gen_g1b19_F_CH_2019.shp", crs=2056)
+see      <- st_read("L:/STAT/08_DS/03_GIS/Geodaten/2019/swissBOUNDARIES3D_gen_g1s19_F_CH_2019.shp", crs=2056)
+
+```
+
+# select Thurgau and Bodensee
+
+```{r}
+
+bezirk_nogeom <- bezirk %>% st_set_geometry(NULL)
+
+thurgau_gem <- gemeinde %>%
+  filter(KTNR == 20) %>%
+  left_join(bezirk_nogeom, by = "BZNR") %>% 
+  select(GDE_ID = GMDNR, GDE_N = GMDNAME, BEZ_ID = BZNR, BEZ_N = BZNAME) 
+
+
+
+thurgau_see <- see %>%
+  filter(GMDNAME == "Bodensee") %>%
+  select(GDE_N = GMDNAME) %>% 
+  #select(GDE_ID = GMDNR, GDE_N = GMDNAME) %>% 
+  mutate(
+    GDE_ID = NA,
+    BEZ_ID = NA, 
+    BEZ_N = NA
+    )
+
+```
+
+rbind
+
+```{r}
+
+thurgau <- rbind(thurgau_gem, thurgau_see)
+
+```
+
+# check
+
+Kanton Thurgau hat 80 Gemeinde. Siehe:
+https://statistik.tg.ch/verzeichnisse/bezirke-und-gemeinden.html/6777
+
+export
+
+```{r}
+
+# thurgau
+st_write(thurgau, "C:/gitrepos/Ressources_Maps/2019/KantonThurgauGemeindeBodensee_epsg2056_F_KTTG_2019.json", driver="GeoJSON")
+st_write(thurgau %>% st_transform(4326), "C:/gitrepos/Ressources_Maps/2019/KantonThurgauGemeindeBodensee_epsg4326_F_KTTG_2019.json", driver="GeoJSON")
+
+#thurgau_gem
+st_write(thurgau_gem, "C:/gitrepos/Ressources_Maps/2019/KantonThurgauGemeinde_epsg2056_F_KTTG_2019.json", driver="GeoJSON")
+st_write(thurgau_gem %>% st_transform(4326), "C:/gitrepos/Ressources_Maps/2019/KantonThurgauGemeinde_epsg4326_F_KTTG_2019.json", driver="GeoJSON")
+
+
+```
+
+# check
+
+zwischen den seen und kantonen gibt es wenige lücken. siehe: 
+  
+  
