@@ -29,12 +29,15 @@ combine_cities <- function(df){
 
 insert_seen <- function(df, seen){
   cols_to_add <- str_subset(names(df), "geometry", negate = TRUE)
+  col_name <- sym(str_subset(cols_to_add, "GEM_NAM"))
 
   seen_prep <- seen %>%
     `is.na<-` (cols_to_add) %>%
-    select(SGEM_CODE, PS_GEM_NAM = See_N, STICHTAG)
+    select(SGEM_CODE, !!col_name := See_N, STICHTAG)
 
   df_out <- st_difference(df, st_union(seen_prep)) %>%
     rbind(seen_prep) %>%
     mutate(ART_N = ifelse(is.na(SGEM_CODE), "See", "Schulgemeinde"))
+
+  return(df_out)
 }
