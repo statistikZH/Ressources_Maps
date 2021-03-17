@@ -18,10 +18,10 @@ os_new_gen <- generalize_boundaries(os_new, keep = 0.01) %>%
 gem_gen <- generalize_boundaries(gem, keep = 0.3)
 
 export_as_geojson(ps_new_gen, "PS_SCHULGEMEINDEN_SHAPE_gen", 2020, "LV95", overwrite = TRUE)
-export_as_geojson(os_new_gen, "OS_SCHULGEMEINDEN_SHAPE_gen", 2020, "LV95")
-export_as_geojson(ps_new_gen, "PS_SCHULGEMEINDEN_SHAPE_gen", 2020, "WGS84")
-export_as_geojson(os_new_gen, "OS_SCHULGEMEINDEN_SHAPE_gen", 2020, "WGS84")
-export_as_geojson(gem_gen, "GemeindeGrosseSeeOhneExklave_gen", 2020, "LV95")
-export_as_geojson(gem_gen, "GemeindeGrosseSeeOhneExklave_gen", 2020, "WGS84")
+export_as_geojson(os_new_gen, "OS_SCHULGEMEINDEN_SHAPE_gen", 2020, "LV95", overwrite = TRUE)
+export_as_geojson(ps_new_gen, "PS_SCHULGEMEINDEN_SHAPE_gen", 2020, "WGS84", overwrite = TRUE)
+export_as_geojson(os_new_gen, "OS_SCHULGEMEINDEN_SHAPE_gen", 2020, "WGS84", overwrite = TRUE)
+export_as_geojson(gem_gen, "GemeindeGrosseSeeOhneExklave_gen", 2020, "LV95", overwrite = TRUE)
+export_as_geojson(gem_gen, "GemeindeGrosseSeeOhneExklave_gen", 2020, "WGS84", overwrite = TRUE)
 
 
