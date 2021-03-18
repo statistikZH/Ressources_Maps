@@ -19,7 +19,7 @@ combine_cities <- function(df){
     mutate(SGEM_CODE = case_when(
       str_detect(!!col_name, "Winterthur") ~ "J000",
       str_detect(!!col_name, "Zürich") ~ "A000",
-      TRUE ~ !!sym(col_name)
+      TRUE ~ SGEM_CODE
     )) %>%
     group_by(SGEM_CODE, !!col_name, STICHTAG) %>%
     summarize()
