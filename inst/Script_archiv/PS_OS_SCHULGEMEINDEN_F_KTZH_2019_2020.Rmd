@@ -12,32 +12,11 @@ title: "GIS_ShpToGeoJSON"
 
 **Metadatenhinweis:**
 
-# R setup
-
-```{r setup}
-
-# clear R memory
-# rm(list = ls())
-
-# db_connect.r
-source("P:/db_connect.r")
-
-# import libraries
-library(sf)
-library(lwgeom)
-library(rmapshaper)
-
-options(scipen = 1000000)
-options(digits = 6)
-
-# values of the environment variables.
-Sys.getenv()
-
-```
 
 # import shp
 
 ```{r}
+devtools::load_all(".")
 
 # Primarstufe
 ps_2020 <- sf::st_read("L:/STAT/08_DS/03_GIS/Geodaten/2020/PS_SCHULGEMEINDEN_SHAPE_F_KTZH_2020.shp", stringsAsFactors = FALSE, crs=2056)

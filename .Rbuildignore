@@ -1,0 +1,4 @@
+^renv$
+^renv\.lock$
+^Ressources_Maps\.Rproj$
+^\.Rproj\.user$
